@@ -3,26 +3,32 @@ import React from 'react';
 import DeleteIcon from "@mui/icons-material/Delete"
 import IconButton from "@mui/material/IconButton"
 import {EditableSpan} from '../../../../../../../common/EditableSpan/EditableSpan';
-import {TaskType} from "../../../../../model/tasksSlice";
 import {TodolistDomain} from "../../../../../model/todolistSlice";
+import { TaskStatus } from '../../../../../../../common/enums/enums';
+import {DomainTask} from "../../../../../model/tasksSlice";
 
 type Props = {
-    task: TaskType
+    task: DomainTask
     todolist: TodolistDomain
 }
 
 export const Task: React.FC<Props> = ({todolist, task}) => {
+    //dispatch change status
+    //dispatch change title
+    //dispatch remove task
+
+    const disabled = todolist.entityStatus === 'loading'
+
     return (
-        <ListItem key={task.id} sx={getListItemSx(task.status === TaskStatus.Completed)}>
+        <ListItem key={task.id}>
             <div>
                 <Checkbox
                     checked={task.status === TaskStatus.Completed}
-                    onChange={changeTaskStatusHandler}
                     disabled={disabled}
                 />
-                <EditableSpan title={task.title} onChange={changeTaskTitleHandler} disabled={disabled} />
+                <EditableSpan title={task.title} onChange={() => {}} disabled={disabled} />
             </div>
-            <IconButton onClick={removeTaskHandler} disabled={disabled}>
+            <IconButton disabled={disabled}>
                 <DeleteIcon />
             </IconButton>
         </ListItem>

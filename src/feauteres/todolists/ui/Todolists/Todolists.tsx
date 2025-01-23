@@ -14,7 +14,7 @@ export const Todolists = () => {
 
     return (
         <div style={{display: 'flex', gap: '10px'}}>
-            {todolists.map(tl => <Todolist todolist={tl}/>)}
+            {todolists.map(tl => <Todolist key={tl.id} todolist={tl}/>)}
 
         </div>
     )

@@ -14,7 +14,7 @@ export const Todolist: React.FC<Props> = ({todolist}) => {
     return (
         <Paper sx={{width: 300, minHeight: 400, padding: '20px'}} elevation={1}>
             <TodolistTitle todolist={todolist}/>
-            <Tasks todolist={todolist}/>
+            <Tasks todoList={todolist}/>
         </Paper>
     )
 }

@@ -1,33 +1,47 @@
-import React from 'react';
-import {TasksType} from "../../../../model/tasksSlice";
+import React, {useEffect} from 'react';
 import {List} from "@mui/material";
 import {Task} from "./Task/Task";
 import {TodolistDomain} from "../../../../model/todolistSlice";
+import {tasksSelector} from "../../../../model/tasks-selector";
+import {useAppDispatch, useAppSelector} from "../../../../../../common/hooks/hooks";
+import {fetchTasksTC} from "../../../../model/tasksSlice";
+import {TaskStatus} from "../../../../../../common/enums/enums";
 
 type Props = {
-    todolist: TodolistDomain
+    todoList: TodolistDomain
 }
 
-export const Tasks: React.FC<Props> = ({todolist}) => {
-    //tasks = select
+export const Tasks: React.FC<Props> = ({todoList}) => {
+    const dispatch = useAppDispatch();
+    const tasks = useAppSelector(tasksSelector)
 
-    const tasks: TasksType = {
-        ['1']: [
-            {id: '1', title: 'Task 1', completed: false},
-            {id: '2', title: 'Task 2', completed: true},
-            {id: '3', title: 'Task 3', completed: false},
-        ],
-        ['2'] : [
-            {id: '43', title: 'Ta2342 1', completed: false},
-            {id: '23423', title: 'Ta4444k 2', completed: true},
-        ]
+    useEffect(() => {
+        dispatch(fetchTasksTC("836b44c4-4eff-419d-94fb-e83f1187412b"))// заглушка
+    }, []);
+
+    const allTodolistTasks = tasks["836b44c4-4eff-419d-94fb-e83f1187412b"] //заглушка
+
+    let tasksForTodolist = allTodolistTasks
+
+    if (todoList.filter === "active") {
+        tasksForTodolist = allTodolistTasks.filter((task) => task.status === TaskStatus.New)
     }
 
+    if (todoList.filter === "completed") {
+        tasksForTodolist = allTodolistTasks.filter((task) => task.status === TaskStatus.Completed)
+    }
+    console.log(tasksForTodolist)
     return (
-        <div>
-            <List>
-                {tasks[todolist.id].map(t => <Task task={t} todolist={todolist}/>)}
-            </List>
-        </div>
+        <>
+            {tasksForTodolist?.length === 0 ? (
+                <p>Тасок нет</p>
+            ) : (
+                <List>
+                    {tasksForTodolist?.map((task) => {
+                        return <Task key={task.id} task={task} todolist={todoList} />
+                    })}
+                </List>
+            )}
+        </>
     )
 }

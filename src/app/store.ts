@@ -1,9 +1,11 @@
 import {configureStore} from "@reduxjs/toolkit";
 import todolistSlice from "../feauteres/todolists/model/todolistSlice";
+import tasksSlice from "../feauteres/todolists/model/tasksSlice";
 
 const store = configureStore({
     reducer: {
-        todolist: todolistSlice
+        todolist: todolistSlice,
+        tasks: tasksSlice
     }
 })
 
