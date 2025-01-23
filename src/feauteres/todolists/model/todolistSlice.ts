@@ -1,4 +1,6 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {Dispatch} from "redux";
+import {todolistsApi} from "../api/todolistsApi";
 
 export type Todolist = {
     id: string;
@@ -7,7 +9,7 @@ export type Todolist = {
     order: number;
 }
 
-type FilterType = 'all' | 'active' | 'completed'
+export type FilterType = 'all' | 'active' | 'completed'
 
 export type TodolistDomain = Todolist & {
     filter: FilterType
@@ -17,7 +19,20 @@ export type TodolistDomain = Todolist & {
 const todolistSlice = createSlice({
     name: 'todolist',
     initialState: [] as TodolistDomain[],
-    reducers: {}
+    reducers: {
+        setTodos: (state, action: PayloadAction<Todolist[]>) => {
+            return action.payload.map(tl => ({...tl, filter: 'all', entityStatus: 'idle'}))
+        },
+        changeFilter: (state, action: PayloadAction<{ todoListId: string, filter: FilterType }>) => {
+            return state.map(tl => tl.id === action.payload.todoListId ? {...tl, filter: action.payload.filter} : tl)
+        }
+    }
 })
+
+export const {setTodos, changeFilter} = todolistSlice.actions
+
+export const fetchTodosTC = () => (dispatch: Dispatch) => {
+    todolistsApi.getTodos().then(res => dispatch(setTodos(res.data)))
+}
 
 export default todolistSlice.reducer

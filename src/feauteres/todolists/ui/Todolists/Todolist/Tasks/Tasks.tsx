@@ -16,10 +16,10 @@ export const Tasks: React.FC<Props> = ({todoList}) => {
     const tasks = useAppSelector(tasksSelector)
 
     useEffect(() => {
-        dispatch(fetchTasksTC("836b44c4-4eff-419d-94fb-e83f1187412b"))// заглушка
+        dispatch(fetchTasksTC(todoList.id))
     }, []);
 
-    const allTodolistTasks = tasks["836b44c4-4eff-419d-94fb-e83f1187412b"] //заглушка
+    const allTodolistTasks = tasks[todoList.id]
 
     let tasksForTodolist = allTodolistTasks
 

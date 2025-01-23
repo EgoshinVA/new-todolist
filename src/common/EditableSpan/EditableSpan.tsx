@@ -12,10 +12,8 @@ export const EditableSpan: React.FC<Props> = ({title, disabled, onChange}) => {
     const [editMode, setEditMode] = useState<boolean>(false)
 
     const changeTitle = () => {
-        if (!disabled) {
             setEditMode(false)
             onChange(value)
-        }
     }
 
     return (
@@ -24,8 +22,9 @@ export const EditableSpan: React.FC<Props> = ({title, disabled, onChange}) => {
                                    onChange={e => setValue(e.currentTarget.value)}
                                    variant="outlined"
                                    onBlur={changeTitle}
+                                   autoFocus
                 /> :
-                <span onDoubleClick={() => setEditMode(true)}>{title}</span>}
+                <h3 onDoubleClick={() => setEditMode(true)}>{title}</h3>}
         </div>
     )
 }

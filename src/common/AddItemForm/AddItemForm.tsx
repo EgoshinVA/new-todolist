@@ -11,6 +11,7 @@ export const AddItemForm: React.FC<Props> = ({addItem}) => {
 
     const addItemHandler = () => {
         addItem(title)
+        setTitle("")
     }
 
     return (

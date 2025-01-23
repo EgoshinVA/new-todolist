@@ -21,7 +21,7 @@ export const Task: React.FC<Props> = ({todolist, task}) => {
 
     return (
         <ListItem key={task.id}>
-            <div>
+            <div style={{ display: 'flex' }}>
                 <Checkbox
                     checked={task.status === TaskStatus.Completed}
                     disabled={disabled}
