@@ -1,0 +1,3 @@
+import {RootState} from "../../../app/store";
+
+export const selectIsAuth = (state: RootState) => state.auth.isAuth;

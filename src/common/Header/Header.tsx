@@ -22,7 +22,7 @@ export const Header = () => {
                     <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
                         Todolist
                     </Typography>
-                    <Button color="inherit">Login</Button>
+                    <Button color="inherit">Logout</Button>
                     <Switch onClick={changeTheme}/>
                 </Toolbar>
                 {false && <LinearProgress/>}
