@@ -1,11 +1,13 @@
 import {Checkbox, ListItem} from '@mui/material';
-import React from 'react';
+import React, {ChangeEvent} from 'react';
 import DeleteIcon from "@mui/icons-material/Delete"
 import IconButton from "@mui/material/IconButton"
 import {EditableSpan} from '../../../../../../../common/EditableSpan/EditableSpan';
 import {TodolistDomain} from "../../../../../model/todolistSlice";
-import { TaskStatus } from '../../../../../../../common/enums/enums';
-import {DomainTask} from "../../../../../model/tasksSlice";
+import {TaskStatus} from '../../../../../../../common/enums/enums';
+import {deleteTaskTC, updateTaskTC} from "../../../../../model/tasksSlice";
+import {useAppDispatch} from "../../../../../../../common/hooks/hooks";
+import {DomainTask} from "../../../../../api/tasksApi.types";
 
 type Props = {
     task: DomainTask
@@ -13,23 +15,35 @@ type Props = {
 }
 
 export const Task: React.FC<Props> = ({todolist, task}) => {
-    //dispatch change status
-    //dispatch change title
-    //dispatch remove task
+    const dispatch = useAppDispatch();
+
+    const updateTaskTitle = (title: string) => {
+        dispatch(updateTaskTC({taskId: task.id, todoListId: todolist.id, task: {title}}))
+    }
+
+    const updateTaskStatus = (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+        const status = checked ? TaskStatus.Completed : TaskStatus.New;
+        dispatch(updateTaskTC({taskId: task.id, todoListId: todolist.id, task: {status}}))
+    }
+
+    const deleteTaskHandler = () => {
+        dispatch(deleteTaskTC({todoListId: todolist.id, taskId: task.id}));
+    }
 
     const disabled = todolist.entityStatus === 'loading'
 
     return (
         <ListItem key={task.id}>
-            <div style={{ display: 'flex' }}>
+            <div style={{display: 'flex'}}>
                 <Checkbox
                     checked={task.status === TaskStatus.Completed}
                     disabled={disabled}
+                    onChange={updateTaskStatus}
                 />
-                <EditableSpan title={task.title} onChange={() => {}} disabled={disabled} />
+                <EditableSpan title={task.title} onChange={updateTaskTitle} disabled={disabled}/>
             </div>
-            <IconButton disabled={disabled}>
-                <DeleteIcon />
+            <IconButton onClick={deleteTaskHandler} disabled={disabled}>
+                <DeleteIcon/>
             </IconButton>
         </ListItem>
     )

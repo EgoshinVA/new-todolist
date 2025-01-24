@@ -30,7 +30,6 @@ export const Tasks: React.FC<Props> = ({todoList}) => {
     if (todoList.filter === "completed") {
         tasksForTodolist = allTodolistTasks.filter((task) => task.status === TaskStatus.Completed)
     }
-    console.log(tasksForTodolist)
     return (
         <>
             {tasksForTodolist?.length === 0 ? (
