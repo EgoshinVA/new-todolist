@@ -1,5 +1,5 @@
 import React from 'react';
-import {Paper} from "@mui/material";
+import {LinearProgress} from "@mui/material";
 import {TodolistDomain} from "../../../model/todolistSlice";
 import {TodolistTitle} from "./TodolistTitle/TodolistTitle";
 import {Tasks} from "./Tasks/Tasks";
@@ -20,11 +20,12 @@ export const Todolist: React.FC<Props> = ({todoList}) => {
     }
 
     return (
-        <Paper sx={{width: 300, minHeight: 400, padding: '20px'}} elevation={1}>
+        <>
+            {todoList.entityStatus === 'loading' && <LinearProgress/>}
             <TodolistTitle todolist={todoList}/>
-            <AddItemForm addItem={addTaskHandler}/>
+            <AddItemForm addItem={addTaskHandler} disabled={todoList.entityStatus === 'loading'}/>
             <Tasks todoList={todoList}/>
             <TodolistsFilter todoList={todoList}/>
-        </Paper>
+        </>
     )
 }

@@ -5,14 +5,21 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import {LinearProgress, Switch} from "@mui/material";
-import {useAppDispatch} from "../hooks/hooks";
+import {useAppDispatch, useAppSelector} from "../hooks/hooks";
 import {setTheme} from "../../app/appSlice";
+import {logoutTC} from "../../feauteres/auth/model/authSlice";
+import {selectAppStatus} from "../../app/app-selector";
 
 export const Header = () => {
     const dispatch = useAppDispatch()
+    const status = useAppSelector(selectAppStatus)
 
     const changeTheme = () => {
         dispatch(setTheme())
+    }
+
+    const logoutHandler = () => {
+        dispatch(logoutTC())
     }
 
     return (
@@ -22,10 +29,10 @@ export const Header = () => {
                     <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
                         Todolist
                     </Typography>
-                    <Button color="inherit">Logout</Button>
+                    <Button onClick={logoutHandler} color="inherit">Logout</Button>
                     <Switch onClick={changeTheme}/>
                 </Toolbar>
-                {false && <LinearProgress/>}
+                {status === 'loading' && <LinearProgress/>}
             </AppBar>
         </Box>
     );

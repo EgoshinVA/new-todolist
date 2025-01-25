@@ -3,8 +3,10 @@ import {Dispatch} from "redux";
 import {tasksApi} from "../api/tasksApi";
 import {DomainTask, UpdateTask} from "../api/tasksApi.types";
 import {RootState} from "../../../app/store";
-import {TaskPriority, TaskStatus} from "../../../common/enums/enums";
-import {addTodoList, deleteTodoList, Todolist} from "./todolistSlice";
+import {addTodoList, changeTodoStatus, deleteTodoList, Todolist, updateTodolist} from "./todolistSlice";
+import {setAuth} from "../../auth/model/authSlice";
+import {changeStatus, setError} from "../../../app/appSlice";
+import {ResultCode} from "../../../common/enums/enums";
 
 export type TasksType = {
     [id: string]: DomainTask[];
@@ -36,17 +38,43 @@ const tasksSlice = createSlice({
         builder.addCase(deleteTodoList, (state, action: PayloadAction<string>) => {
             delete state[action.payload]
         })
+        builder.addCase(setAuth, (state, action: PayloadAction<boolean>) => {
+            if (!action.payload) return {}
+        })
     }
 })
 
 export const {addTask, setTasks, deleteTask, updateTask} = tasksSlice.actions;
 
 export const fetchTasksTC = (todoListId: string) => (dispatch: Dispatch) => {
-    tasksApi.getTasks(todoListId).then(res => dispatch(setTasks({todoListId, tasks: res.data.items})))
+    dispatch(changeStatus('loading'))
+    tasksApi.getTasks(todoListId).then(res => {
+        dispatch(setTasks({todoListId, tasks: res.data.items}))
+        dispatch(changeStatus('success'))
+    })
+        .catch((err) => {
+            dispatch(setError(err.message));
+            dispatch(changeStatus('error'))
+        })
 }
 
 export const addTaskTC = (params: { title: string, todoListId: string }) => (dispatch: Dispatch) => {
-    tasksApi.addTask(params).then(res => dispatch(addTask(res.data.data.item)))
+    dispatch(changeStatus('loading'))
+    tasksApi.addTask(params).then(res => {
+        if (res.data.resultCode === ResultCode.Success) {
+            dispatch(addTask(res.data.data.item))
+            dispatch(changeStatus('success'))
+        } else {
+            if (res.data.messages)
+                dispatch(setError(res.data.messages[0]))
+            else
+                dispatch(setError('Something went wrong'))
+            dispatch(changeStatus('error'))
+        }
+    }).catch((err) => {
+        dispatch(setError(err.message));
+        dispatch(changeStatus('error'))
+    })
 }
 
 export const updateTaskTC = (params: {
@@ -68,14 +96,51 @@ export const updateTaskTC = (params: {
             deadline: task.deadline,
             ...params.task
         }
+        dispatch(changeStatus('loading'))
+        dispatch(changeTodoStatus({todoListId: params.todoListId, status: 'loading'}))
+        tasksApi.updateTask({taskId: params.taskId, todoListId: params.todoListId, task: newTask}).then(res => {
 
-        tasksApi.updateTask({taskId: params.taskId, todoListId: params.todoListId, task: newTask}).then(res =>
-            dispatch(updateTask({todoListId: params.todoListId, task: res.data.data.item})))
+            if (res.data.resultCode === ResultCode.Success) {
+                dispatch(updateTask({todoListId: params.todoListId, task: res.data.data.item}))
+                dispatch(changeStatus('success'))
+                dispatch(changeTodoStatus({todoListId: params.todoListId, status: 'success'}))
+            } else {
+                if (res.data.messages)
+                    dispatch(setError(res.data.messages[0]))
+                else
+                    dispatch(setError('Something went wrong'))
+                dispatch(changeStatus('error'))
+                dispatch(changeTodoStatus({todoListId: params.todoListId, status: 'error'}))
+            }
+        }).catch((err) => {
+            dispatch(setError(err.message));
+            dispatch(changeStatus('error'))
+            dispatch(changeTodoStatus({todoListId: params.todoListId, status: 'error'}))
+        })
     }
 }
 
 export const deleteTaskTC = (params: { todoListId: string, taskId: string }) => (dispatch: Dispatch) => {
-    tasksApi.deleteTask(params).then(res => dispatch(deleteTask(params)))
+    dispatch(changeStatus('loading'))
+    dispatch(changeTodoStatus({todoListId: params.todoListId, status: 'loading'}))
+    tasksApi.deleteTask(params).then(res => {
+        if (res.data.resultCode === ResultCode.Success) {
+            dispatch(deleteTask(params))
+            dispatch(changeStatus('success'))
+            dispatch(changeTodoStatus({todoListId: params.todoListId, status: 'success'}))
+        } else {
+            if (res.data.messages)
+                dispatch(setError(res.data.messages[0]))
+            else
+                dispatch(setError('Something went wrong'))
+            dispatch(changeStatus('error'))
+            dispatch(changeTodoStatus({todoListId: params.todoListId, status: 'error'}))
+        }
+    }).catch((err) => {
+        dispatch(setError(err.message));
+        dispatch(changeStatus('error'))
+        dispatch(changeTodoStatus({todoListId: params.todoListId, status: 'error'}))
+    })
 }
 
 export default tasksSlice.reducer

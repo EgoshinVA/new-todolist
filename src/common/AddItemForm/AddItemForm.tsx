@@ -4,9 +4,10 @@ import Button from "@mui/material/Button";
 
 type Props = {
     addItem: (title: string) => void;
+    disabled?: boolean;
 }
 
-export const AddItemForm: React.FC<Props> = ({addItem}) => {
+export const AddItemForm: React.FC<Props> = ({addItem, disabled}) => {
     const [title, setTitle] = useState<string>("")
 
     const addItemHandler = () => {
@@ -16,8 +17,8 @@ export const AddItemForm: React.FC<Props> = ({addItem}) => {
 
     return (
         <div>
-            <TextField value={title} onChange={e => setTitle(e.currentTarget.value)} variant="outlined" />
-            <Button variant='contained' onClick={addItemHandler}>+</Button>
+            <TextField size={'small'} label={'Enter a title'} value={title} onChange={e => setTitle(e.currentTarget.value)} variant="outlined" />
+            <Button disabled={disabled} variant='contained' onClick={addItemHandler}>+</Button>
         </div>
     )
 }

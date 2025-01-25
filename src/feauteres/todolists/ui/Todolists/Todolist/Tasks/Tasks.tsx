@@ -35,7 +35,7 @@ export const Tasks: React.FC<Props> = ({todoList}) => {
             {tasksForTodolist?.length === 0 ? (
                 <p>Тасок нет</p>
             ) : (
-                <List>
+                <List sx={{ minHeight: 200 }}>
                     {tasksForTodolist?.map((task) => {
                         return <Task key={task.id} task={task} todolist={todoList} />
                     })}

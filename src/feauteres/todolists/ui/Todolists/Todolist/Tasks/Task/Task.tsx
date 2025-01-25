@@ -33,7 +33,7 @@ export const Task: React.FC<Props> = ({todolist, task}) => {
     const disabled = todolist.entityStatus === 'loading'
 
     return (
-        <ListItem key={task.id}>
+        <ListItem key={task.id} sx={{padding: 0, height: '40px'}}>
             <div style={{display: 'flex'}}>
                 <Checkbox
                     checked={task.status === TaskStatus.Completed}

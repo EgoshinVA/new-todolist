@@ -3,6 +3,7 @@ import {Todolist} from "./Todolist/Todolist";
 import {fetchTodosTC} from "../../model/todolistSlice";
 import {useAppDispatch, useAppSelector} from "../../../../common/hooks/hooks";
 import {todolistsSelector} from "../../model/todolists-selector";
+import {Paper} from '@mui/material';
 
 export const Todolists = () => {
     const dispatch = useAppDispatch()
@@ -13,9 +14,14 @@ export const Todolists = () => {
     const todolists = useAppSelector(todolistsSelector)
 
     return (
-        <div style={{display: 'flex', gap: '10px'}}>
-            {todolists.length > 0 && todolists.map(tl => <Todolist key={tl.id} todoList={tl}/>)}
-
-        </div>
+        <>
+            {todolists.map((tl) => {
+                return (
+                    <Paper key={tl.id} sx={{p: "0 20px 20px 20px"}}>
+                        <Todolist key={tl.id} todoList={tl}/>
+                    </Paper>
+                )
+            })}
+        </>
     )
 }
