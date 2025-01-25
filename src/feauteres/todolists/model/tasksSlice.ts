@@ -3,10 +3,11 @@ import {Dispatch} from "redux";
 import {tasksApi} from "../api/tasksApi";
 import {DomainTask, UpdateTask} from "../api/tasksApi.types";
 import {RootState} from "../../../app/store";
-import {addTodoList, changeTodoStatus, deleteTodoList, Todolist, updateTodolist} from "./todolistSlice";
+import {addTodoList, changeTodoStatus, deleteTodoList, Todolist} from "./todolistSlice";
 import {setAuth} from "../../auth/model/authSlice";
-import {changeStatus, setError} from "../../../app/appSlice";
+import {changeStatus} from "../../../app/appSlice";
 import {ResultCode} from "../../../common/enums/enums";
+import {setNetworkError, setServerError} from "../../../common/utils/setServerError";
 
 export type TasksType = {
     [id: string]: DomainTask[];
@@ -53,8 +54,7 @@ export const fetchTasksTC = (todoListId: string) => (dispatch: Dispatch) => {
         dispatch(changeStatus('success'))
     })
         .catch((err) => {
-            dispatch(setError(err.message));
-            dispatch(changeStatus('error'))
+            setNetworkError(dispatch, err.message)
         })
 }
 
@@ -65,15 +65,10 @@ export const addTaskTC = (params: { title: string, todoListId: string }) => (dis
             dispatch(addTask(res.data.data.item))
             dispatch(changeStatus('success'))
         } else {
-            if (res.data.messages)
-                dispatch(setError(res.data.messages[0]))
-            else
-                dispatch(setError('Something went wrong'))
-            dispatch(changeStatus('error'))
+            setServerError(dispatch, res.data)
         }
     }).catch((err) => {
-        dispatch(setError(err.message));
-        dispatch(changeStatus('error'))
+        setNetworkError(dispatch, err.message)
     })
 }
 
@@ -105,16 +100,11 @@ export const updateTaskTC = (params: {
                 dispatch(changeStatus('success'))
                 dispatch(changeTodoStatus({todoListId: params.todoListId, status: 'success'}))
             } else {
-                if (res.data.messages)
-                    dispatch(setError(res.data.messages[0]))
-                else
-                    dispatch(setError('Something went wrong'))
-                dispatch(changeStatus('error'))
+                setServerError(dispatch, res.data)
                 dispatch(changeTodoStatus({todoListId: params.todoListId, status: 'error'}))
             }
         }).catch((err) => {
-            dispatch(setError(err.message));
-            dispatch(changeStatus('error'))
+            setNetworkError(dispatch, err.message)
             dispatch(changeTodoStatus({todoListId: params.todoListId, status: 'error'}))
         })
     }
@@ -129,16 +119,11 @@ export const deleteTaskTC = (params: { todoListId: string, taskId: string }) => 
             dispatch(changeStatus('success'))
             dispatch(changeTodoStatus({todoListId: params.todoListId, status: 'success'}))
         } else {
-            if (res.data.messages)
-                dispatch(setError(res.data.messages[0]))
-            else
-                dispatch(setError('Something went wrong'))
-            dispatch(changeStatus('error'))
+            setServerError(dispatch, res.data)
             dispatch(changeTodoStatus({todoListId: params.todoListId, status: 'error'}))
         }
     }).catch((err) => {
-        dispatch(setError(err.message));
-        dispatch(changeStatus('error'))
+        setNetworkError(dispatch, err.message)
         dispatch(changeTodoStatus({todoListId: params.todoListId, status: 'error'}))
     })
 }

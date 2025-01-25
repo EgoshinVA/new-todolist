@@ -3,7 +3,8 @@ import {Dispatch} from "redux";
 import {Inputs} from "../ui/Login/Login";
 import {authApi} from "../api/authApi";
 import {ResultCode} from "../../../common/enums/enums";
-import {changeStatus, setError} from "../../../app/appSlice";
+import {changeStatus} from "../../../app/appSlice";
+import {setNetworkError, setServerError} from "../../../common/utils/setServerError";
 
 const authSlice = createSlice({
     name: 'auth',
@@ -26,21 +27,15 @@ export const {setAuth, setIsInitialized} = authSlice.actions;
 export const loginTC = (params: Inputs) => (dispatch: Dispatch) => {
     dispatch(changeStatus('loading'))
     authApi.login(params).then((res) => {
-        if(res.data.resultCode === ResultCode.Success) {
+        if (res.data.resultCode === ResultCode.Success) {
             dispatch(setAuth(true));
             localStorage.setItem('sn-token', res.data.data.token)
             dispatch(changeStatus('success'))
-        }
-        else {
-            if(res.data.messages)
-                dispatch(setError(res.data.messages[0]))
-            else
-                dispatch(setError('Something went wrong'))
-            dispatch(changeStatus('error'))
+        } else {
+            setServerError(dispatch, res.data)
         }
     }).catch((err) => {
-        dispatch(setError(err.message));
-        dispatch(changeStatus('error'))
+        setNetworkError(dispatch, err.message)
     })
 }
 
@@ -62,8 +57,7 @@ export const logoutTC = () => (dispatch: Dispatch) => {
             dispatch(setAuth(false))
             localStorage.removeItem('sn-token')
             dispatch(changeStatus('success'))
-        }
-        else
+        } else
             dispatch(changeStatus('error'))
     })
 }

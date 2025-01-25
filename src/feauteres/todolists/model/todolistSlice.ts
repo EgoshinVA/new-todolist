@@ -2,8 +2,9 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Dispatch} from "redux";
 import {todolistsApi} from "../api/todolistsApi";
 import {setAuth} from "../../auth/model/authSlice";
-import {AppStatus, changeStatus, setError} from "../../../app/appSlice";
+import {AppStatus, changeStatus} from "../../../app/appSlice";
 import {ResultCode} from "../../../common/enums/enums";
+import {setNetworkError, setServerError} from "../../../common/utils/setServerError";
 
 export type Todolist = {
     id: string;
@@ -38,8 +39,11 @@ const todolistSlice = createSlice({
         deleteTodoList: (state, action: PayloadAction<string>) => {
             return state.filter(tl => tl.id !== action.payload)
         },
-        changeTodoStatus: (state, action: PayloadAction<{todoListId: string, status: AppStatus}>) => {
-            return state.map(tl => tl.id === action.payload.todoListId ? {...tl, entityStatus: action.payload.status} : tl)
+        changeTodoStatus: (state, action: PayloadAction<{ todoListId: string, status: AppStatus }>) => {
+            return state.map(tl => tl.id === action.payload.todoListId ? {
+                ...tl,
+                entityStatus: action.payload.status
+            } : tl)
         }
     },
     extraReducers: (builder) => {
@@ -49,7 +53,14 @@ const todolistSlice = createSlice({
     }
 })
 
-export const {setTodos, changeFilter, addTodoList, updateTodolist, deleteTodoList, changeTodoStatus} = todolistSlice.actions
+export const {
+    setTodos,
+    changeFilter,
+    addTodoList,
+    updateTodolist,
+    deleteTodoList,
+    changeTodoStatus
+} = todolistSlice.actions
 
 export const fetchTodosTC = () => (dispatch: Dispatch) => {
     dispatch(changeStatus('loading'))
@@ -58,8 +69,7 @@ export const fetchTodosTC = () => (dispatch: Dispatch) => {
         dispatch(changeStatus('success'))
     })
         .catch((err) => {
-            dispatch(setError(err.message));
-            dispatch(changeStatus('error'))
+            setNetworkError(dispatch, err.message)
         })
 }
 
@@ -70,15 +80,10 @@ export const addTodoListTC = (title: string) => (dispatch: Dispatch) => {
             dispatch(addTodoList(res.data.data.item))
             dispatch(changeStatus('success'))
         } else {
-            if (res.data.messages)
-                dispatch(setError(res.data.messages[0]))
-            else
-                dispatch(setError('Something went wrong'))
-            dispatch(changeStatus('error'))
+            setServerError(dispatch, res.data)
         }
     }).catch((err) => {
-        dispatch(setError(err.message));
-        dispatch(changeStatus('error'))
+        setNetworkError(dispatch, err.message)
     })
 }
 
@@ -89,15 +94,10 @@ export const updateTodolistTitleTC = (params: { title: string, todoListId: strin
             dispatch(updateTodolist(params))
             dispatch(changeStatus('success'))
         } else {
-            if (res.data.messages)
-                dispatch(setError(res.data.messages[0]))
-            else
-                dispatch(setError('Something went wrong'))
-            dispatch(changeStatus('error'))
+            setServerError(dispatch, res.data)
         }
     }).catch((err) => {
-        dispatch(setError(err.message));
-        dispatch(changeStatus('error'))
+        setNetworkError(dispatch, err.message)
     })
 }
 
@@ -110,16 +110,11 @@ export const deleteTodoListTC = (todoListId: string) => (dispatch: Dispatch) => 
             dispatch(changeStatus('success'))
             dispatch(changeTodoStatus({todoListId, status: 'success'}))
         } else {
-            if (res.data.messages)
-                dispatch(setError(res.data.messages[0]))
-            else
-                dispatch(setError('Something went wrong'))
-            dispatch(changeStatus('error'))
+            setServerError(dispatch, res.data)
             dispatch(changeTodoStatus({todoListId, status: 'error'}))
         }
     }).catch((err) => {
-        dispatch(setError(err.message));
-        dispatch(changeStatus('error'))
+        setNetworkError(dispatch, err.message)
         dispatch(changeTodoStatus({todoListId, status: 'error'}))
     })
 }
