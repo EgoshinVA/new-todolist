@@ -3,8 +3,7 @@ import {SubmitHandler, useForm} from "react-hook-form";
 import {Checkbox, TextField} from "@mui/material";
 import Button from "@mui/material/Button";
 import {useAppDispatch, useAppSelector} from "../../../../common/hooks/hooks";
-import {loginTC} from "../../model/authSlice";
-import {selectIsAuth} from "../../model/auth-selector";
+import {loginTC, selectIsAuth} from "../../model/authSlice";
 import {useNavigate} from "react-router-dom";
 
 export type Inputs = {

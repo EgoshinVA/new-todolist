@@ -1,13 +1,13 @@
 import {createBrowserRouter, RouteObject} from "react-router";
 import App from "../../app/App";
 import {Login} from "../../feauteres/auth/ui/Login/Login";
-import {Page404} from "../Page404/Page404";
+import {Page404} from "../components/Page404/Page404";
 import {Main} from "../../app/Main";
-import {Faq} from "../Faq/Faq";
+import {Faq} from "../components/Faq/Faq";
 import {Outlet, useNavigate} from "react-router-dom";
 import {useAppSelector} from "../hooks/hooks";
-import {selectIsAuth} from "../../feauteres/auth/model/auth-selector";
 import {useEffect} from "react";
+import {selectIsAuth} from "../../feauteres/auth/model/authSlice";
 
 
 export const Path = {

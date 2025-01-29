@@ -1,4 +1,4 @@
-import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Dispatch} from "redux";
 import {Inputs} from "../ui/Login/Login";
 import {authApi} from "../api/authApi";
@@ -6,23 +6,33 @@ import {ResultCode} from "../../../common/enums/enums";
 import {changeStatus} from "../../../app/appSlice";
 import {setNetworkError, setServerError} from "../../../common/utils/setServerError";
 
-const authSlice = createSlice({
+const createSliceWithThunks = buildCreateSlice({creators: {asyncThunk: asyncThunkCreator}})
+
+const authSlice = createSliceWithThunks({
     name: 'auth',
     initialState: {
         isAuth: false,
         isInitialized: false,
     },
-    reducers: {
-        setAuth: (state, action: PayloadAction<boolean>) => {
-            state.isAuth = action.payload;
-        },
-        setIsInitialized: (state, action: PayloadAction<boolean>) => {
-            state.isInitialized = action.payload;
+    reducers: create => {
+        const createAThunk = create.asyncThunk.withTypes<{ rejectValue: null }>()
+        return {
+            setAuth: (state, action: PayloadAction<boolean>) => {
+                state.isAuth = action.payload;
+            },
+            setIsInitialized: (state, action: PayloadAction<boolean>) => {
+                state.isInitialized = action.payload;
+            }
         }
+    },
+    selectors: {
+        selectIsAuth: state => state.isAuth,
+        selectIsInitialized: state => state.isInitialized,
     }
 })
 
 export const {setAuth, setIsInitialized} = authSlice.actions;
+export const {selectIsAuth, selectIsInitialized} = authSlice.selectors;
 
 export const loginTC = (params: Inputs) => (dispatch: Dispatch) => {
     dispatch(changeStatus('loading'))

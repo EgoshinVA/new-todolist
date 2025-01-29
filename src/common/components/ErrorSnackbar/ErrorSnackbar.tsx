@@ -3,8 +3,8 @@ import {useEffect, useState} from 'react';
 import Snackbar, {SnackbarCloseReason} from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import {useAppSelector} from "../hooks/hooks";
-import {selectAppError} from "../../app/app-selector";
+import {useAppSelector} from "../../hooks/hooks";
+import {selectAppError} from "../../../app/appSlice";
 
 export const ErrorSnackbar = () => {
     const [open, setOpen] = useState(false);

@@ -50,6 +50,9 @@ const todolistSlice = createSlice({
         builder.addCase(setAuth, (state, action: PayloadAction<boolean>) => {
             if (!action.payload) return []
         })
+    },
+    selectors: {
+        todolistsSelector: state => state
     }
 })
 
@@ -61,6 +64,8 @@ export const {
     deleteTodoList,
     changeTodoStatus
 } = todolistSlice.actions
+
+export const {todolistsSelector} = todolistSlice.selectors
 
 export const fetchTodosTC = () => (dispatch: Dispatch) => {
     dispatch(changeStatus('loading'))

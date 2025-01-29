@@ -7,7 +7,7 @@ type Props = {
     disabled?: boolean
 }
 
-export const EditableSpan: React.FC<Props> = ({title, disabled, onChange}) => {
+export const EditableSpan: React.FC<Props> = ({title, onChange}) => {
     const [value, setValue] = useState<string>(title)
     const [editMode, setEditMode] = useState<boolean>(false)
 

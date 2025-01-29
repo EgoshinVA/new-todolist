@@ -1,8 +1,7 @@
 import React, {useEffect} from 'react';
 import {Todolist} from "./Todolist/Todolist";
-import {fetchTodosTC} from "../../model/todolistSlice";
+import {fetchTodosTC, todolistsSelector} from "../../model/todolistSlice";
 import {useAppDispatch, useAppSelector} from "../../../../common/hooks/hooks";
-import {todolistsSelector} from "../../model/todolists-selector";
 import {Paper} from '@mui/material';
 
 export const Todolists = () => {

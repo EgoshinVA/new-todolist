@@ -2,9 +2,8 @@ import React, {useEffect} from 'react';
 import {List} from "@mui/material";
 import {Task} from "./Task/Task";
 import {TodolistDomain} from "../../../../model/todolistSlice";
-import {tasksSelector} from "../../../../model/tasks-selector";
 import {useAppDispatch, useAppSelector} from "../../../../../../common/hooks/hooks";
-import {fetchTasksTC} from "../../../../model/tasksSlice";
+import {fetchTasks, tasksSelector} from "../../../../model/tasksSlice";
 import {TaskStatus} from "../../../../../../common/enums/enums";
 
 type Props = {
@@ -16,7 +15,7 @@ export const Tasks: React.FC<Props> = ({todoList}) => {
     const tasks = useAppSelector(tasksSelector)
 
     useEffect(() => {
-        dispatch(fetchTasksTC(todoList.id))
+        dispatch(fetchTasks(todoList.id))
     }, []);
 
     const allTodolistTasks = tasks[todoList.id]

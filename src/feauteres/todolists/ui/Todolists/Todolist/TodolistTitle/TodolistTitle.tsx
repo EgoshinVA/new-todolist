@@ -1,7 +1,7 @@
 import DeleteIcon from "@mui/icons-material/Delete"
 import IconButton from "@mui/material/IconButton"
 import React from 'react';
-import {EditableSpan} from "../../../../../../common/EditableSpan/EditableSpan";
+import {EditableSpan} from "../../../../../../common/components/EditableSpan/EditableSpan";
 import {deleteTodoListTC, TodolistDomain, updateTodolistTitleTC} from "../../../../model/todolistSlice";
 import {useAppDispatch} from "../../../../../../common/hooks/hooks";
 

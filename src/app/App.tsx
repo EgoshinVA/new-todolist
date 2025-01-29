@@ -1,14 +1,13 @@
 import React, {useEffect} from 'react';
 import './App.css';
-import {Header} from "../common/Header/Header";
+import {Header} from "../common/components/Header/Header";
 import {CircularProgress, CssBaseline, ThemeProvider} from '@mui/material';
 import {getTheme} from "../common/theme/theme";
 import {useAppDispatch, useAppSelector} from "../common/hooks/hooks";
-import {appThemeSelector} from "./app-selector";
 import {Outlet} from "react-router-dom";
-import {authMeTC} from "../feauteres/auth/model/authSlice";
-import {selectIsInitialized} from "../feauteres/auth/model/auth-selector";
-import {ErrorSnackbar} from "../common/ErrorSnackbar/ErrorSnackbar";
+import {authMeTC, selectIsInitialized} from "../feauteres/auth/model/authSlice";
+import {ErrorSnackbar} from "../common/components/ErrorSnackbar/ErrorSnackbar";
+import {appThemeSelector} from "./appSlice";
 
 function App() {
     const theme = useAppSelector(appThemeSelector)
