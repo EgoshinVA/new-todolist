@@ -1,5 +1,4 @@
-import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {Dispatch} from "redux";
+import {asyncThunkCreator, buildCreateSlice} from "@reduxjs/toolkit";
 import {Inputs} from "../ui/Login/Login";
 import {authApi} from "../api/authApi";
 import {ResultCode} from "../../../common/enums/enums";
@@ -17,12 +16,69 @@ const authSlice = createSliceWithThunks({
     reducers: create => {
         const createAThunk = create.asyncThunk.withTypes<{ rejectValue: null }>()
         return {
-            setAuth: (state, action: PayloadAction<boolean>) => {
+            setAuth: create.reducer<boolean>((state, action) => {
                 state.isAuth = action.payload;
-            },
-            setIsInitialized: (state, action: PayloadAction<boolean>) => {
-                state.isInitialized = action.payload;
-            }
+            }),
+            loginTC: createAThunk(async (params: Inputs, {dispatch, rejectWithValue}) => {
+                    try {
+                        dispatch(changeStatus('loading'))
+                        const res = await authApi.login(params)
+                        if (res.data.resultCode === ResultCode.Success) {
+                            localStorage.setItem('sn-token', res.data.data.token)
+                            dispatch(changeStatus('success'))
+                            return true
+                        } else {
+                            setServerError(dispatch, res.data)
+                            return rejectWithValue(null)
+                        }
+                    } catch (error: any) {
+                        setNetworkError(dispatch, error.message)
+                        return rejectWithValue(null)
+                    }
+                },
+                {
+                    fulfilled: (state, action) => {
+                        state.isAuth = action.payload;
+                    }
+                }),
+            logoutTC: createAThunk(async (undefined, {dispatch, rejectWithValue}) => {
+                    try {
+                        dispatch(changeStatus('loading'))
+                        const res = await authApi.logout()
+                        if (res.data.resultCode === ResultCode.Success) {
+                            localStorage.removeItem('sn-token')
+                            dispatch(changeStatus('success'))
+                            return false
+                        } else {
+                            dispatch(changeStatus('error'))
+                            return rejectWithValue(null)
+                        }
+
+                    } catch (error: any) {
+                        return rejectWithValue(null)
+                    }
+                },
+                {
+                    fulfilled: (state, action) => {
+                        state.isAuth = action.payload;
+                    }
+                }),
+            authMeTC: createAThunk(async (undefined, {dispatch, rejectWithValue}) => {
+                    try {
+                        dispatch(changeStatus('loading'))
+                        const res = await authApi.authMe()
+                        dispatch(changeStatus('success'))
+                        return res.data.resultCode === ResultCode.Success;
+                    } catch (error: any) {
+                        return rejectWithValue(null)
+                    }
+                },
+                {
+                    fulfilled: (state, action) => {
+                        state.isAuth = action.payload;
+                        state.isInitialized = true
+                    }
+                })
         }
     },
     selectors: {
@@ -31,45 +87,7 @@ const authSlice = createSliceWithThunks({
     }
 })
 
-export const {setAuth, setIsInitialized} = authSlice.actions;
+export const {setAuth, loginTC, authMeTC, logoutTC} = authSlice.actions;
 export const {selectIsAuth, selectIsInitialized} = authSlice.selectors;
-
-export const loginTC = (params: Inputs) => (dispatch: Dispatch) => {
-    dispatch(changeStatus('loading'))
-    authApi.login(params).then((res) => {
-        if (res.data.resultCode === ResultCode.Success) {
-            dispatch(setAuth(true));
-            localStorage.setItem('sn-token', res.data.data.token)
-            dispatch(changeStatus('success'))
-        } else {
-            setServerError(dispatch, res.data)
-        }
-    }).catch((err) => {
-        setNetworkError(dispatch, err.message)
-    })
-}
-
-export const authMeTC = () => (dispatch: Dispatch) => {
-    dispatch(changeStatus('loading'))
-    authApi.authMe().then((res) => {
-        if (res.data.resultCode === ResultCode.Success)
-            dispatch(setAuth(true));
-        dispatch(changeStatus('success'))
-    }).finally(() => {
-        dispatch(setIsInitialized(true));
-    })
-}
-
-export const logoutTC = () => (dispatch: Dispatch) => {
-    dispatch(changeStatus('loading'))
-    authApi.logout().then((res) => {
-        if (res.data.resultCode === ResultCode.Success) {
-            dispatch(setAuth(false))
-            localStorage.removeItem('sn-token')
-            dispatch(changeStatus('success'))
-        } else
-            dispatch(changeStatus('error'))
-    })
-}
 
 export default authSlice.reducer;

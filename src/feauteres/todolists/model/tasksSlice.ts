@@ -2,7 +2,7 @@ import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolk
 import {tasksApi} from "../api/tasksApi";
 import {DomainTask, UpdateTask} from "../api/tasksApi.types";
 import {RootState} from "../../../app/store";
-import {addTodoList, changeTodoStatus, deleteTodoList, Todolist} from "./todolistSlice";
+import {addTodoListTC, changeTodoStatus, deleteTodoListTC, Todolist} from "./todolistSlice";
 import {setAuth} from "../../auth/model/authSlice";
 import {changeStatus, setError} from "../../../app/appSlice";
 import {ResultCode} from "../../../common/enums/enums";
@@ -149,10 +149,10 @@ const tasksSlice = createSliceWithThunks({
         }
     },
     extraReducers: (builder) => {
-        builder.addCase(addTodoList, (state, action: PayloadAction<Todolist>) => {
+        builder.addCase(addTodoListTC.fulfilled, (state, action: PayloadAction<Todolist>) => {
             state[action.payload.id] = []
         })
-        builder.addCase(deleteTodoList, (state, action: PayloadAction<string>) => {
+        builder.addCase(deleteTodoListTC.fulfilled, (state, action: PayloadAction<string>) => {
             delete state[action.payload]
         })
         builder.addCase(setAuth, (state, action: PayloadAction<boolean>) => {
