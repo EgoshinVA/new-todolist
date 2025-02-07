@@ -21,3 +21,12 @@ export type UpdateTask = {
     startDate?: string
     deadline?: string
 }
+
+export type TasksType = {
+    [id: string]: DomainTask[];
+}
+export type ResponseTask = {
+    items: DomainTask[]
+    totalCount: number
+    error: string | null
+}

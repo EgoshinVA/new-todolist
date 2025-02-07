@@ -1,16 +1,14 @@
 import {configureStore} from "@reduxjs/toolkit";
-import todolistSlice from "../feauteres/todolists/model/todolistSlice";
-import tasksSlice from "../feauteres/todolists/model/tasksSlice";
 import appSlice from "./appSlice";
-import authSlice from "../feauteres/auth/model/authSlice";
+import {baseApi} from "./baseApi";
+import {setupListeners} from "@reduxjs/toolkit/query";
 
 const store = configureStore({
     reducer: {
-        todolist: todolistSlice,
-        tasks: tasksSlice,
         app: appSlice,
-        auth: authSlice,
-    }
+        [baseApi.reducerPath]: baseApi.reducer
+    },
+    middleware: getDefaultMiddleware => getDefaultMiddleware().concat(baseApi.middleware)
 })
 
 export type RootState = ReturnType<typeof store.getState>
@@ -18,5 +16,4 @@ export type AppDispatch = typeof store.dispatch
 
 export default store
 
-// @ts-ignore
-window.store = store
+setupListeners(store.dispatch)

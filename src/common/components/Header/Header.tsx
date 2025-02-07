@@ -6,8 +6,9 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import {LinearProgress, Switch} from "@mui/material";
 import {useAppDispatch, useAppSelector} from "../../hooks/hooks";
-import {selectAppStatus, setTheme} from "../../../app/appSlice";
-import {logoutTC} from "../../../feauteres/auth/model/authSlice";
+import {selectAppStatus, setAuth, setTheme} from "../../../app/appSlice";
+import {useLogoutMutation} from "../../../feauteres/auth/api/authApi";
+import {ResultCode} from "../../enums/enums";
 
 export const Header = () => {
     const dispatch = useAppDispatch()
@@ -17,8 +18,15 @@ export const Header = () => {
         dispatch(setTheme())
     }
 
+    const [logout] = useLogoutMutation()
+
     const logoutHandler = () => {
-        dispatch(logoutTC())
+        logout().then(res => {
+            if (res.data?.resultCode === ResultCode.Success) {
+                localStorage.removeItem('sn-token')
+                dispatch(setAuth(false))
+            }
+        })
     }
 
     return (

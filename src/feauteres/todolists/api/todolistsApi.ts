@@ -1,18 +1,40 @@
-import {instance} from "../../../common/instance/instance";
-import {Todolist} from "../model/todolistSlice";
 import {BaseResponse} from "../../../common/types/types";
+import {baseApi} from "../../../app/baseApi";
+import {DomainTodolist, Todolist} from "./todolistsApi.types";
 
-export const todolistsApi = {
-    getTodos() {
-        return instance.get<Todolist[]>('todo-lists')
-    },
-    addTodo(title: string) {
-        return instance.post<BaseResponse<{ item: Todolist }>>('todo-lists', {title})
-    },
-    updateTodo(params: {title: string, todoListId: string}) {
-        return instance.put<BaseResponse>(`todo-lists/${params.todoListId}`, {title: params.title})
-    },
-    deleteTodo(todoListId: string) {
-        return instance.delete<BaseResponse>(`todo-lists/${todoListId}`)
-    }
-}
+export const todolistsApi = baseApi.injectEndpoints({
+    endpoints: build => ({
+        getTodos: build.query<DomainTodolist[], void>({
+            query: () => "todo-lists",
+            providesTags: ['Todolist'],
+            transformResponse: (res: Todolist[]): DomainTodolist[] => {
+                return res.map(tl => ({...tl, filter: 'all', entityStatus: 'idle'}))
+            }
+        }),
+        addTodo: build.mutation<BaseResponse<{ item: Todolist }>, string>({
+            query: title => ({
+                url: "todo-lists",
+                method: "POST",
+                body: {title}
+            }),
+            invalidatesTags: ['Todolist']
+        }),
+        removeTodo: build.mutation<BaseResponse, string>({
+            query: todoListId => ({
+                url: `todo-lists/${todoListId}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ['Todolist']
+        }),
+        updateTodo: build.mutation<BaseResponse, { title: string, todoListId: string }>({
+            query: params => ({
+                url: `todo-lists/${params.todoListId}`,
+                method: "PUT",
+                body: {title: params.title}
+            }),
+            invalidatesTags: ['Todolist']
+        })
+    })
+})
+
+export const {useGetTodosQuery, useAddTodoMutation, useRemoveTodoMutation, useUpdateTodoMutation} = todolistsApi

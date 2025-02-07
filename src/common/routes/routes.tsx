@@ -7,8 +7,7 @@ import {Faq} from "../components/Faq/Faq";
 import {Outlet, useNavigate} from "react-router-dom";
 import {useAppSelector} from "../hooks/hooks";
 import {useEffect} from "react";
-import {selectIsAuth} from "../../feauteres/auth/model/authSlice";
-
+import {selectIsAuth} from "../../app/appSlice";
 
 export const Path = {
     Main: "/",

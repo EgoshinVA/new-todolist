@@ -3,31 +3,51 @@ import React, {ChangeEvent} from 'react';
 import DeleteIcon from "@mui/icons-material/Delete"
 import IconButton from "@mui/material/IconButton"
 import {EditableSpan} from '../../../../../../../common/components/EditableSpan/EditableSpan';
-import {TodolistDomain} from "../../../../../model/todolistSlice";
 import {TaskStatus} from '../../../../../../../common/enums/enums';
-import {deleteTask, updateTask} from "../../../../../model/tasksSlice";
-import {useAppDispatch} from "../../../../../../../common/hooks/hooks";
-import {DomainTask} from "../../../../../api/tasksApi.types";
+import {DomainTask, UpdateTask} from "../../../../../api/tasksApi.types";
+import {DomainTodolist} from "../../../../../api/todolistsApi.types";
+import {useRemoveTaskMutation, useUpdateTaskMutation} from "../../../../../api/tasksApi";
 
 type Props = {
     task: DomainTask
-    todolist: TodolistDomain
+    todolist: DomainTodolist
 }
 
 export const Task: React.FC<Props> = ({todolist, task}) => {
-    const dispatch = useAppDispatch();
+    const [removeTask] = useRemoveTaskMutation()
+    const [updateTask] = useUpdateTaskMutation()
 
     const updateTaskTitle = (title: string) => {
-        dispatch(updateTask({taskId: task.id, todoListId: todolist.id, task: {title}}))
+
+        const newTask: UpdateTask = {
+            title,
+            description: task.description,
+            status: task.status,
+            priority: task.priority,
+            startDate: task.startDate,
+            deadline: task.deadline,
+        }
+
+        updateTask({taskId: task.id, todoListId: todolist.id, task: newTask})
     }
 
     const updateTaskStatus = (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
         const status = checked ? TaskStatus.Completed : TaskStatus.New;
-        dispatch(updateTask({taskId: task.id, todoListId: todolist.id, task: {status}}))
+
+        const newTask: UpdateTask = {
+            title: task.title,
+            description: task.description,
+            status,
+            priority: task.priority,
+            startDate: task.startDate,
+            deadline: task.deadline,
+        }
+
+        updateTask({taskId: task.id, todoListId: todolist.id, task: newTask})
     }
 
     const deleteTaskHandler = () => {
-        dispatch(deleteTask({todoListId: todolist.id, taskId: task.id}));
+        removeTask({todoListId: todolist.id, taskId: task.id})
     }
 
     const disabled = todolist.entityStatus === 'loading'

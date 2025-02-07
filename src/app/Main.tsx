@@ -3,16 +3,17 @@ import Grid from "@mui/material/Grid2"
 import React from "react"
 import {AddItemForm} from "../common/components/AddItemForm/AddItemForm";
 import {Todolists} from "../feauteres/todolists/ui/Todolists/Todolists";
-import {useAppDispatch, useAppSelector} from "../common/hooks/hooks";
-import {addTodoListTC} from "../feauteres/todolists/model/todolistSlice";
+import {useAppSelector} from "../common/hooks/hooks";
 import {selectAppStatus} from "./appSlice";
+import {useAddTodoMutation} from "../feauteres/todolists/api/todolistsApi";
 
 export const Main = () => {
-    const dispatch = useAppDispatch()
     const status = useAppSelector(selectAppStatus)
 
+    const [addTodolist] = useAddTodoMutation()
+
     const addTodolistHandler = (title: string) => {
-        dispatch(addTodoListTC(title))
+        addTodolist(title)
     }
 
     return (

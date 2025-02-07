@@ -1,22 +1,18 @@
 import {ButtonGroup} from '@mui/material';
 import React from 'react';
 import Button from "@mui/material/Button";
-import {changeFilter, FilterType, TodolistDomain} from "../../../../model/todolistSlice";
-import {useAppDispatch} from "../../../../../../common/hooks/hooks";
+import {DomainTodolist, Filter} from "../../../../api/todolistsApi.types";
 
 type Props = {
-    todoList: TodolistDomain
+    todoList: DomainTodolist
 }
 
 export const TodolistsFilter: React.FC<Props> = ({todoList}) => {
-    const dispatch = useAppDispatch()
-
-    const changeFilterHandler = (filter: FilterType) => {
-        dispatch(changeFilter({todoListId: todoList.id, filter}))
+    const changeFilterHandler = (filter: Filter) => {
+        //dispatch(changeFilter({todoListId: todoList.id, filter}))
     }
 
-
-    const getActiveButton = (filter: FilterType) => {
+    const getActiveButton = (filter: Filter) => {
         return todoList.filter === filter ? 'error' : 'primary'
     }
 

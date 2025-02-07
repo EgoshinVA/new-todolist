@@ -1,4 +1,4 @@
-import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {createSlice} from "@reduxjs/toolkit";
 
 export type ThemeMode = 'dark' | 'light'
 export type AppStatus = 'idle' | 'loading' | 'error' | 'success'
@@ -8,27 +8,32 @@ const appSlice = createSlice({
     initialState: {
         theme: 'light' as ThemeMode,
         error: null as string | null,
-        status: 'idle' as AppStatus
+        status: 'idle' as AppStatus,
+        isAuth: false,
     },
-    reducers: {
-        setTheme: (state) => {
+    reducers: create => ({
+        setTheme: create.reducer((state) => {
             state.theme = state.theme === 'light' ? 'dark' : 'light';
-        },
-        setError: (state, action: PayloadAction<string | null>) => {
+        }),
+        setError: create.reducer<string | null>((state, action) => {
             state.error = action.payload;
-        },
-        changeStatus: (state, action: PayloadAction<AppStatus>) => {
+        }),
+        changeStatus: create.reducer<AppStatus>((state, action) => {
             state.status = action.payload;
-        }
-    },
+        }),
+        setAuth: create.reducer<boolean>((state, action) => {
+            state.isAuth = action.payload;
+        }),
+    }),
     selectors: {
         appThemeSelector: state => state.theme,
         selectAppError: state => state.error,
-        selectAppStatus: state => state.status
+        selectAppStatus: state => state.status,
+        selectIsAuth: state => state.isAuth,
     }
 })
 
-export const {setTheme, setError, changeStatus} = appSlice.actions;
-export const {appThemeSelector, selectAppStatus, selectAppError} = appSlice.selectors
+export const {setTheme, setError, changeStatus, setAuth} = appSlice.actions;
+export const {appThemeSelector, selectAppStatus, selectAppError, selectIsAuth} = appSlice.selectors
 
 export default appSlice.reducer;

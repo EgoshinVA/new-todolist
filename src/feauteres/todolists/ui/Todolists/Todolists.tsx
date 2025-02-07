@@ -1,20 +1,14 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {Todolist} from "./Todolist/Todolist";
-import {fetchTodosTC, todolistsSelector} from "../../model/todolistSlice";
-import {useAppDispatch, useAppSelector} from "../../../../common/hooks/hooks";
 import {Paper} from '@mui/material';
+import {useGetTodosQuery} from "../../api/todolistsApi";
 
 export const Todolists = () => {
-    const dispatch = useAppDispatch()
-    useEffect(() => {
-        dispatch(fetchTodosTC())
-    }, []);
-
-    const todolists = useAppSelector(todolistsSelector)
+    const {data} = useGetTodosQuery()
 
     return (
         <>
-            {todolists.map((tl) => {
+            {data?.map((tl) => {
                 return (
                     <Paper key={tl.id} sx={{p: "0 20px 20px 20px"}}>
                         <Todolist key={tl.id} todoList={tl}/>

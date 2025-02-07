@@ -1,15 +1,26 @@
-import {instance} from "../../../common/instance/instance";
 import {BaseResponse} from "../../../common/types/types";
 import {Inputs} from "../ui/Login/Login";
+import {baseApi} from "../../../app/baseApi";
 
-export const authApi = {
-    login(params: Inputs) {
-        return instance.post<BaseResponse<{ userId: number, token: string }>>(`auth/login`, params)
-    },
-    authMe() {
-        return instance.get<BaseResponse>('auth/me')
-    },
-    logout() {
-        return instance.delete<BaseResponse>('auth/login')
-    }
-}
+export const authApi = baseApi.injectEndpoints({
+    endpoints: build => ({
+        authMe: build.query<BaseResponse, void>({
+            query: () => "auth/me"
+        }),
+        login: build.mutation<BaseResponse<{ userId: number, token: string }>, Inputs>({
+            query: (params) => ({
+                url: "auth/login",
+                method: "POST",
+                body: params,
+            })
+        }),
+        logout: build.mutation<BaseResponse, void>({
+            query: () => ({
+                url: "auth/login",
+                method: "DELETE"
+            })
+        })
+    })
+})
+
+export const {useAuthMeQuery, useLogoutMutation, useLoginMutation} = authApi
